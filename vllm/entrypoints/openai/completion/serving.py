@@ -600,6 +600,7 @@ class OpenAIServingCompletion(OpenAIServing):
                 cached_tokens=last_final_res.num_cached_tokens
             )
 
+        print("Hello")
         print("Final Res Batch:", final_res_batch)
 
         request_metadata.final_usage_info = usage
