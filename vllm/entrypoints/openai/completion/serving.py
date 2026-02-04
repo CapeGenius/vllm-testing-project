@@ -600,6 +600,8 @@ class OpenAIServingCompletion(OpenAIServing):
                 cached_tokens=last_final_res.num_cached_tokens
             )
 
+        print("Final Res Batch:", final_res_batch)
+
         request_metadata.final_usage_info = usage
         if final_res_batch:
             kv_transfer_params = final_res_batch[0].kv_transfer_params
