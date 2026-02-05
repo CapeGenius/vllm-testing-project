@@ -602,10 +602,13 @@ class OpenAIServingCompletion(OpenAIServing):
 
         print("Hello")
         print("Final Res Batch:", final_res_batch)
+        final_res_dict: dict = {}
+        final_res_dict["final_res_batch"] = final_res_batch
 
         request_metadata.final_usage_info = usage
         if final_res_batch:
             kv_transfer_params = final_res_batch[0].kv_transfer_params
+            kv_transfer_params["final_res_dict"] = final_res_dict
         return CompletionResponse(
             id=request_id,
             created=created_time,
