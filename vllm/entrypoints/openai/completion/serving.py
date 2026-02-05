@@ -600,26 +600,36 @@ class OpenAIServingCompletion(OpenAIServing):
                 cached_tokens=last_final_res.num_cached_tokens
             )
 
-        print("Hello")
-        print("Final Res Batch:", final_res_batch)
+        decode_time: int = (
+            final_res_batch[0].metrics.last_token_ts
+            - final_res_batch[0].metrics.first_token_ts
+        )
+        prefill_time: int = (
+            final_res_batch[0].metrics.first_token_ts
+            - final_res_batch[0].metrics.scheduled_ts
+        )
         vLLM_metrics: dict = {
             "arrival_time": final_res_batch[0].metrics.arrival_time,
             "first_token_latency": final_res_batch[0].metrics.first_token_latency,
+            "first_token_ts": final_res_batch[0].metrics.first_token_ts,
+            "last_token_ts": final_res_batch[0].metrics.last_token_ts,
             "queued_ts": final_res_batch[0].metrics.queued_ts,
             "scheduled_ts": final_res_batch[0].metrics.scheduled_ts,
+            "prefill_time": prefill_time,
+            "decode_time": decode_time,
         }
 
         request_metadata.final_usage_info = usage
         if final_res_batch:
-            # kv_transfer_params = final_res_batch[0].kv_transfer_params
-            kv_transfer_params["vLLM_metrics"] = vLLM_metrics
+            kv_transfer_params = final_res_batch[0].kv_transfer_params
+            # kv_transfer_params["vLLM_metrics"] = vLLM_metrics
         return CompletionResponse(
             id=request_id,
             created=created_time,
             model=model_name,
             choices=choices,
             usage=usage,
-            kv_transfer_params=kv_transfer_params,
+            kv_transfer_params=vLLM_metrics,
         )
 
     def _create_completion_logprobs(
