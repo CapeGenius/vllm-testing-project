@@ -602,13 +602,17 @@ class OpenAIServingCompletion(OpenAIServing):
 
         print("Hello")
         print("Final Res Batch:", final_res_batch)
-        final_res_dict: dict = {}
-        final_res_dict["final_res_batch"] = final_res_batch
+        vLLM_metrics: dict = {
+            "arrival_time": final_res_batch[0].metrics.arrival_time,
+            "first_token_latency": final_res_batch[0].metrics.first_token_latency,
+            "queued_ts": final_res_batch[0].metrics.queued_ts,
+            "scheduled_ts": final_res_batch[0].metrics.scheduled_ts,
+        }
 
         request_metadata.final_usage_info = usage
         if final_res_batch:
-            kv_transfer_params = final_res_batch[0].kv_transfer_params
-            kv_transfer_params["final_res_dict"] = final_res_dict
+            # kv_transfer_params = final_res_batch[0].kv_transfer_params
+            kv_transfer_params["vLLM_metrics"] = vLLM_metrics
         return CompletionResponse(
             id=request_id,
             created=created_time,
