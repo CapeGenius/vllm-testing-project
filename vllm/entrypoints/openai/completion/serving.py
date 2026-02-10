@@ -613,6 +613,11 @@ class OpenAIServingCompletion(OpenAIServing):
             decode_time / final_res_batch[0].metrics.num_generation_tokens
         )
 
+        e2e_latency = (
+            final_res_batch[0].metrics.last_token_ts
+            - final_res_batch[0].metrics.arrival_time
+        )
+
         throughput: float = 1 / average_itl
 
         vLLM_metrics: dict = {
@@ -627,6 +632,7 @@ class OpenAIServingCompletion(OpenAIServing):
             "decode_time": decode_time,
             "average_itl": average_itl,
             "throughput": throughput,
+            "e2e_latency": e2e_latency,
         }
 
         request_metadata.final_usage_info = usage
