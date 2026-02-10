@@ -608,6 +608,13 @@ class OpenAIServingCompletion(OpenAIServing):
             final_res_batch[0].metrics.first_token_ts
             - final_res_batch[0].metrics.scheduled_ts
         )
+
+        average_itl: float = (
+            decode_time / final_res_batch[0].metrics.num_generation_tokens
+        )
+
+        throughput: float = 1 / average_itl
+
         vLLM_metrics: dict = {
             "arrival_time": final_res_batch[0].metrics.arrival_time,
             "first_token_latency": final_res_batch[0].metrics.first_token_latency,
@@ -615,8 +622,11 @@ class OpenAIServingCompletion(OpenAIServing):
             "last_token_ts": final_res_batch[0].metrics.last_token_ts,
             "queued_ts": final_res_batch[0].metrics.queued_ts,
             "scheduled_ts": final_res_batch[0].metrics.scheduled_ts,
+            "time_to_first_token": final_res_batch[0].metrics.first_token_latency,
             "prefill_time": prefill_time,
             "decode_time": decode_time,
+            "average_itl": average_itl,
+            "throughput": throughput,
         }
 
         request_metadata.final_usage_info = usage
